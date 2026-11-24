@@ -1,0 +1,56 @@
+DE PAPAYA AL MUNDO
+==================
+Manual para un canal de YouTube sin cara
+
+Aquí está todo lo que hemos aprendido montando canales de YouTube sin cara con Claude:
+cómo elegir ideas, escribir guiones, hacer ganchos y miniaturas, montar el vídeo,
+la voz, el sonido, las herramientas que hacen falta y los errores que no hay que repetir.
+
+Está pensado para que lo lea TU Claude y trabaje siguiendo este método.
+
+
+OPCIÓN 1 - Claude Code (la app de escritorio o la terminal). La mejor.
+-------------------------------------------------------------------------
+1. Descomprime el ZIP donde quieras (por ejemplo, en Documentos).
+2. Abre Claude Code y elige como carpeta de trabajo la carpeta «De papaya al mundo»
+   (o crea la carpeta de tu canal y copia dentro todos estos archivos).
+3. Claude lee solo el archivo CLAUDE.md al empezar. Escríbele, por ejemplo:
+   «Lee el manual y ayúdame a elegir el nicho de mi canal».
+
+
+OPCIÓN 2 - claude.ai (web o app del móvil)
+-------------------------------------------
+1. Descomprime el ZIP.
+2. En claude.ai, crea un Proyecto nuevo (menú Proyectos → Crear proyecto).
+3. En «Conocimiento del proyecto», sube todos los archivos .md y pronunciacion.json
+   (y, si quieres las animaciones, también los de la carpeta animaciones).
+   Ojo: en claude.ai Claude puede escribirte el código, pero para convertir las
+   animaciones en vídeo hace falta ejecutarlo en tu PC (mejor con Claude Code).
+4. En «Instrucciones del proyecto», pega esto:
+   «Eres el asistente de mi canal de YouTube sin cara. Sigue el método de CLAUDE.md
+   y, antes de cada tarea, lee el manual que corresponde según su tabla.»
+5. Habla con Claude dentro de ese proyecto.
+
+
+QUÉ HAY EN CADA ARCHIVO
+------------------------
+CLAUDE.md                     Instrucciones para Claude y las 12 reglas de oro
+01_crecer_en_youtube.md       Algoritmo, packaging, retención, suscripciones, anuncios, Shorts
+02_ideas_y_nicho.md           Cómo elegir nicho y encontrar ideas que ya han funcionado
+03_guion.md                   Estructura y reglas del guion
+04_ganchos.md                 Catálogo de fórmulas para los primeros segundos
+05_humor.md                   Cómo meter humor sin que parezca comedia
+06_montaje.md                 Ritmo, cámara, planos, efectos, sonido y revisión
+07_stock_y_licencias.md       Dónde sacar imágenes gratis, licencias y búsquedas que fallan
+08_voz_y_sonido.md            Voz con ElevenLabs, pronunciación, música y efectos
+09_miniaturas.md              Método y reglas de miniaturas
+10_herramientas.md            Qué hace falta instalar, cuentas y cómo se monta el sistema
+11_errores_que_no_repetir.md  Lo que ya salió mal, para que no te pase
+pronunciacion.json            Diccionario de siglas para que una voz latina hable como en España
+animaciones/                  El motor de las animaciones programadas (cuentas, listas, ganchos) y dos
+                              plantillas que ya funcionan. Empieza por animaciones/LEEME.md
+
+
+Los ejemplos son de un canal de coches y dinero en España: copia la idea, no el tema.
+Y cuando tu canal tenga datos en YouTube Studio, apunta lo que te funcione:
+tus datos valen más que cualquier regla de este manual.

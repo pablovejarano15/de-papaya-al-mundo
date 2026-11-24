@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Cuatro comprobaciones</title>
+<!-- Lista de comprobaciones, una por escena (check.html?n=1..4): número gigante, título que se escribe, líneas ✓/✕ que
+     entran cuando las dice la voz y los pasos abajo (el actual resaltado, los anteriores en verde). Los datos van en D:
+     tiempos en segundos desde el inicio de la escena. Ejemplo de un vídeo sobre comprar coche. -->
+<link rel="stylesheet" href="base.css">
+<style>
+#num{left:130px;top:150px;font:400 620px/0.9 Anton;color:#ffd400;text-shadow:0 14px 90px rgba(255,212,0,.28);transform-origin:50% 60%}
+#de{left:470px;top:650px;font:400 120px/1 Anton;color:rgba(255,255,255,.5)}
+#kk{left:660px;top:150px}
+#tit{left:656px;top:196px;font:400 122px/1.04 Anton;letter-spacing:.02em;white-space:nowrap}
+.ln{position:absolute;left:660px;font:700 48px/1.25 Mont;white-space:nowrap;display:flex;align-items:center;gap:22px}
+.ln i{font-style:normal;flex:none;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 40px Anton;background:#3ddc84;color:#06200f}
+.ln.no i{background:#ff4338;color:#fff}
+.ln b{color:#ffd400;font-weight:800}
+#chips{position:absolute;left:0;width:1920px;top:930px;display:flex;justify-content:center;gap:22px}
+.chip{height:64px;padding:0 28px 0 11px;border-radius:32px;display:flex;align-items:center;gap:14px;font:800 27px Mont;letter-spacing:.05em;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.28);color:#fff;white-space:nowrap}
+.chip em{font:400 28px Anton;font-style:normal;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center}
+.chip.on{background:#ffd400;border-color:#ffd400;color:#0b0b0b;box-shadow:0 0 34px rgba(255,212,0,.45)}.chip.on em{background:#0b0b0b;color:#ffd400}
+.chip.v{background:#3ddc84;border-color:#3ddc84;color:#06200f}.chip.v em{background:#06200f;color:#3ddc84}
+</style></head>
+<body><div id="stage">
+<div class="layer dark"></div>
+<div id="num" class="abs"></div><div id="de" class="abs">/ 4</div>
+<div id="kk" class="abs kick">10 minutos con el móvil · antes de pisar el concesionario</div>
+<div id="tit" class="abs"></div>
+<div id="lns"></div>
+<div id="chips"></div>
+<div class="layer vig"></div>
+</div>
+<script src="comun.js"></script>
+<script>
+(async function(){
+const n=+new URLSearchParams(location.search).get('n');
+const D={1:{dur:9.83,tt:.8,tit:'LA GARANTÍA<br><span class="y">DEL COCHE ENTERO</span>',l:[[2.8,1,'En <b>años</b> y en <b>kilómetros</b>'],[4.8,0,'No la de la batería, la que ponen en grande'],[7.5,1,'Lee qué te exige para mantenerla']]},
+  2:{dur:10.8,tt:1.2,tit:'EL TALLER OFICIAL<br><span class="y">MÁS CERCANO</span>',l:[[3.8,1,'Búscalo en la <b>web de la marca</b>'],[5.5,0,'¿A más de una hora? Perderás una mañana'],[9.0,0,'…cada vez que se encienda un testigo']]},
+  3:{dur:10.22,tt:1.1,tit:'SU NOTA<br><span class="y">EN EURO NCAP</span>',l:[[3.4,1,'Escribe el <b>modelo exacto</b> en su web'],[5.6,0,'¿No aparece? No tiene nota'],[7.7,0,'¿Cuatro estrellas? Lee por qué']]},
+  4:{dur:7.9,tt:1.2,tit:'CUÁNDO LLEGÓ<br><span class="y">A ESPAÑA</span>',l:[[3.7,0,'¿Lleva menos de <b>un año</b>?'],[5.3,1,'Que los fallos de juventud los descubra otro']]}}[n];
+window.DUR=D.dur; window.SUB=2;
+window.SFX=[[.05,'impacto/Hard Hit 4.mp3',-18,1.2],[D.tt,'pop/Pop 1.wav',-22,.5],...D.l.map(([t],i)=>[t,'pop/'+['pop.mp3','Pop (2).mp3','Pop 1.wav'][i],-23,.5])];
+$('num').textContent=n; $('tit').innerHTML=D.tit;
+const lns=D.l.map(([t,ok,h],i)=>{const el=document.createElement('div'); el.className='ln'+(ok?'':' no'); el.style.top=(520+i*104)+'px';
+  el.innerHTML=`<i>${ok?'✓':'✕'}</i><span>${h}</span>`; $('lns').appendChild(el); return{el,t}});
+const chips=['GARANTÍA','TALLERES','PRUEBA DE CHOQUE','UN AÑO A LA VENTA'].map((nm,i)=>{const el=document.createElement('div');
+  el.className='chip'+(i+1<n?' v':i+1===n?' on':''); el.innerHTML=`<em>${i+1<n?'✓':i+1}</em>${nm}`; $('chips').appendChild(el); return el});
+await fuentes();
+function render(t){
+  const u=seg(t,.05,.4); $('num').style.opacity=clamp(u*4); $('num').style.transform=`scale(${lerp(1.7,1,E.out5(u))})`; $('de').style.opacity=seg(t,.3,.6);
+  sube($('kk'),t,.3,.4,14); const p=E.out5(seg(t,D.tt,D.tt+.6)); $('tit').style.clipPath=`inset(-6% ${100*(1-p)}% -6% 0)`;
+  lns.forEach(l=>{const a=E.out5(seg(t,l.t,l.t+.4)); l.el.style.opacity=a; l.el.style.transform=`translateX(${-40*(1-a)}px)`});
+  chips.forEach((el,i)=>{const b=i+1===n?Math.sin(clamp((t-.3)/.4)*Math.PI):0; el.style.transform=`scale(${1+.12*b})`; el.style.opacity=i+1<=n?1:.6});
+}
+window.seek=async t=>{render(t);return 1};
+await window.seek(0); window.LISTO=true;
+})();
+</script></body></html>

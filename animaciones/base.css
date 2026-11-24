@@ -1,0 +1,16 @@
+/* Fuentes gratis de Google Fonts (licencia OFL): descárgalas y déjalas en animaciones/fuentes/ con estos nombres
+   (Anton-Regular.ttf, Montserrat[wght].ttf, Kalam-Bold.ttf). Ver LEEME.md. */
+@font-face{font-family:Anton;src:url("fuentes/Anton-Regular.ttf")}
+@font-face{font-family:Mont;src:url("fuentes/Montserrat%5Bwght%5D.ttf");font-weight:100 900}
+@font-face{font-family:Kalam;src:url("fuentes/Kalam-Bold.ttf")}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#05070c;color:#fff;font-family:Mont,sans-serif}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden}
+.abs{position:absolute}.layer{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.y{color:#ffd400}.r{color:#ff4338}.g{color:#3ddc84}
+.kick{font:700 26px Mont;letter-spacing:.22em;color:#ffd400;text-transform:uppercase;white-space:nowrap}
+.dark{background-image:linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.032) 1px,transparent 1px),radial-gradient(ellipse 90% 70% at 50% 42%,#172240 0%,#0a0d17 56%,#05070c 100%);background-size:80px 80px,80px 80px,100% 100%}
+.estudio{background:radial-gradient(ellipse 80% 62% at 32% 80%,#2c3757 0%,#131829 46%,#07090f 100%)}
+.vig{background:radial-gradient(ellipse 75% 75% at 50% 50%,transparent 58%,rgba(0,0,0,.5) 100%)}
+.kalam{font-family:Kalam;font-weight:700;color:#ff4338;text-shadow:0 4px 18px rgba(0,0,0,.7);white-space:nowrap}
+svg .rot{fill:none;stroke:#ff4338;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Cuenta paso a paso</title>
+<!-- Cuenta pausada: cada cifra entra cuando la dice la voz, con su origen debajo; la operación se construye línea a
+     línea y el resultado se queda, resaltado. Datos y tiempos en cuentas.js: cuenta.html?n=1 es la cuenta «1».
+     Opcional: un objeto real recortado a la izquierda (img/<nombre>.png), una barra partida (qué parte de un total es
+     algo), los pasos abajo (chips) y un fondo de vídeo real (bg, ver fondos.py). Formato de los datos en LEEME.md. -->
+<link rel="stylesheet" href="base.css">
+<style>
+#floor{position:absolute;left:0;right:0;top:872px;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3) 34%,rgba(255,255,255,.16) 70%,transparent)}
+#carBox{position:absolute;left:30px;bottom:206px;width:900px;height:560px;display:flex;align-items:flex-end;justify-content:center}
+#carWrap{position:relative;transform-origin:50% 100%}
+#car{display:block;max-width:880px;max-height:520px;position:relative;z-index:2}
+#carRef{position:absolute;left:0;top:100%;width:100%;margin-top:-18px;transform:scaleY(-1);opacity:.18;filter:blur(3px);-webkit-mask-image:linear-gradient(0deg,#000,transparent 55%);z-index:0}
+#carSh{position:absolute;left:4%;right:4%;bottom:-16px;height:60px;background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.82),transparent 100%);filter:blur(9px);z-index:1}
+#carName{position:absolute;left:70px;top:150px;font:400 64px/1 Anton;letter-spacing:.02em;white-space:nowrap}
+#carSub{position:absolute;left:72px;top:222px;font:700 26px Mont;color:rgba(255,255,255,.75);white-space:nowrap}
+#panel{position:absolute;top:96px}
+#kk{white-space:nowrap}
+#tit{display:inline-block;font:400 82px/1.04 Anton;letter-spacing:.02em;margin-top:12px;white-space:nowrap;transform-origin:0 0}
+#rows{position:relative;margin-top:30px}
+.row{position:absolute;left:0;right:0;display:flex;align-items:center;transform-origin:0 50%}
+.op{flex:none;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 40px/1 Anton;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);color:#fff;margin-right:22px}
+.op.v{visibility:hidden}
+.txt{flex:1;min-width:0}
+.lb{font:800 25px/1.2 Mont;letter-spacing:.11em;text-transform:uppercase;color:#ffd400;white-space:nowrap}
+.sl{font:600 22px/1.25 Mont;color:rgba(255,255,255,.62);white-space:nowrap;margin-top:3px}
+.val{flex:none;font:400 78px/1 Anton;letter-spacing:.01em;white-space:nowrap;text-align:right;margin-left:24px;position:relative}
+.val.tx{font:800 40px/1.15 Mont;letter-spacing:.01em}
+.val .old{position:relative}
+.val .old:after{content:"";position:absolute;left:-6px;right:-6px;top:52%;height:9px;border-radius:5px;background:#ff4338;transform:scaleX(var(--tx,0)) rotate(-4deg);transform-origin:0 50%}
+.row.res .val{font-size:104px;color:#ffd400;text-shadow:0 0 40px rgba(255,212,0,.35)}
+.row.res .lb{color:#fff}
+.row.res .box{position:absolute;left:-22px;right:-22px;top:-12px;bottom:-12px;border-radius:22px;background:rgba(255,212,0,.08);border:2px solid rgba(255,212,0,.5);box-shadow:0 0 50px rgba(255,212,0,.15);z-index:-1}
+.sep{position:absolute;left:0;right:0;height:4px;border-radius:2px;background:#ffd400;transform-origin:0 50%}
+.nt{position:absolute;font-size:44px;white-space:nowrap;transform:rotate(-2deg);transform-origin:0 50%}
+.c-r{color:#ff4338!important}.c-g{color:#3ddc84!important}.c-w{color:#fff!important}.c-y{color:#ffd400!important}
+#parte{position:absolute;left:0;right:0}
+#pbar{position:relative;height:74px;border-radius:14px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.28);overflow:hidden}
+#pseg{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#ffb800,#ffd400);box-shadow:0 0 40px rgba(255,212,0,.4)}
+#plabs{display:flex;justify-content:space-between;margin-top:14px;font:800 30px Mont;letter-spacing:.04em;white-space:nowrap}
+#chips{position:absolute;left:0;width:1920px;top:950px;display:flex;justify-content:center;gap:14px}
+.chip{height:54px;padding:0 22px 0 9px;border-radius:27px;display:flex;align-items:center;gap:10px;font:800 21px Mont;letter-spacing:.05em;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.26);color:rgba(255,255,255,.8);white-space:nowrap}
+.chip em{font:400 24px Anton;font-style:normal;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center}
+.chip.on{background:#ffd400;border-color:#ffd400;color:#0b0b0b;box-shadow:0 0 30px rgba(255,212,0,.4)}.chip.on em{background:#0b0b0b;color:#ffd400}
+.chip.ok{background:rgba(61,220,132,.16);border-color:#3ddc84;color:#fff}.chip.ok em{background:#3ddc84;color:#06200f}
+#fuente{left:44px;bottom:20px;font:500 17px Mont;color:rgba(255,255,255,.5);white-space:nowrap}
+#flash{background:#fff;opacity:0}
+/* pausada no es quieta: fondo de vídeo real, cámara que empuja, barras que crecen */
+#bg{position:absolute;left:0;top:0}
+#est.conbg.estudio{background:linear-gradient(180deg,rgba(5,8,16,.5),rgba(5,8,16,.3) 40%,rgba(5,8,16,.82) 76%,rgba(5,8,16,.95))}
+#est.conbg.dark{background:radial-gradient(ellipse 80% 70% at 50% 46%,rgba(8,12,24,.42),rgba(4,6,12,.86));background-size:100% 100%}
+#cam{transform-origin:50% 50%}
+.bb{position:absolute;height:12px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}
+.bb i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:6px;background:linear-gradient(90deg,rgba(255,255,255,.55),#fff)}
+.bb.res i{background:linear-gradient(90deg,#ffb800,#ffd400);box-shadow:0 0 18px rgba(255,212,0,.6)}
+.bb.c-r i{background:linear-gradient(90deg,#c81d14,#ff4338)}.bb.c-g i{background:linear-gradient(90deg,#1f9e5a,#3ddc84)}
+</style></head>
+<body><div id="stage">
+<canvas id="bg" width="1920" height="1080"></canvas>
+<div id="est" class="layer estudio"></div><div id="floor"></div>
+<div id="cam" class="layer">
+<div id="carBox"><div id="carWrap"><img id="carRef"><div id="carSh"></div><img id="car"></div></div>
+<div id="carName"></div><div id="carSub"></div>
+<div id="panel"><div id="kk" class="kick"></div><div id="tit"></div><div id="rows"></div></div>
+</div>
+<div id="chips"></div>
+<div id="fuente" class="abs"></div>
+<div class="layer vig"></div><div id="flash" class="layer"></div>
+</div>
+<script src="cuentas.js"></script>
+<script src="creditos.js"></script>
+<script src="fondos.js"></script>
+<script src="comun.js"></script>
+<script>
+(async function(){
+const n=new URLSearchParams(location.search).get('n'), D=window.CUENTAS[n];
+window.DUR=D.dur; window.SUB=1;
+const BGN=D.bg&&window.FONDOS?window.FONDOS[D.bg]||0:0, bg=[];
+for(let k=1;k<=BGN;k++){const im=new Image(); im.src=`img/bg/${D.bg}/${String(k).padStart(4,'0')}.jpg`; bg.push(im)}
+const cx=$('bg').getContext('2d');
+const sigue=!!D.sigue, AB=D.abre||0, RS=D.respira||0, T0=sigue?-9:AB, conCoche=!!D.img;
+// abre = hasta esa palabra se ve el vídeo nítido y luego entra la cuenta; respira = al acabar, el panel se va y vuelve el vídeo
+// sigue = continúa la escena anterior (coche y fondo ya puestos); nuevo = además vuelve a entrar el antetítulo (paso nuevo),
+// titNuevo = y el título
+const TK=(sigue&&!D.nuevo)?-9:AB, TT=(sigue&&!D.titNuevo)?-9:AB;
+const PX=conCoche?1000:300, PW=conCoche?830:1320;                 // panel: a la derecha del coche, o centrado
+const SFX=(sigue&&!D.nuevo)?[]:[[AB,sigue?'whoosh/whoosh.mp3':'whoosh/whoosh-clean.mp3',sigue?-25:-21,1.2]];
+const panel=$('panel'); panel.style.left=PX+'px'; panel.style.width=PW+'px';
+$('kk').textContent=D.kick||''; $('tit').innerHTML=D.tit||'';
+if(conCoche){$('car').src=$('carRef').src=`img/${D.img}.png`; $('carName').textContent=D.nombre||''; $('carSub').textContent=D.sub||''}
+else{['carBox','carName','carSub','floor'].forEach(id=>$(id).style.display='none'); $('est').className='layer dark'}
+if(BGN)$('est').classList.add('conbg'); else $('bg').style.display='none';
+$('fuente').textContent=[D.fuente,conCoche?(window.CRED||{})[D.img]:''].filter(Boolean).join(' · ');
+// ---- filas ----
+const H=D.alto||118, HR=D.altoRes||150;
+let y=0;
+const filas=(D.filas||[]).map((f,i)=>{
+  const el=document.createElement('div'); el.className='row'+(f.r?' res':'');
+  const op=f.op||'';
+  el.innerHTML=(f.r?'<div class="box"></div>':'')+`<div class="op ${op?'':'v'}">${op}</div>`+
+    `<div class="txt"><div class="lb">${f.l||''}</div>${f.s?`<div class="sl">${f.s}</div>`:''}</div>`+
+    `<div class="val ${f.tx?'tx':''}">${f.antes?`<span class="old">${f.antes}</span> `:''}<span class="nw">${f.v||''}</span></div>`;
+  if(f.c)el.querySelector('.nw').classList.add('c-'+f.c);
+  const sep=f.r?document.createElement('div'):null;
+  if(sep){sep.className='sep'; sep.style.top=(y-12)+'px'; $('rows').appendChild(sep); y+=10}
+  el.style.top=y+'px'; $('rows').appendChild(el);
+  const o={f,el,sep,nw:el.querySelector('.nw'),old:el.querySelector('.old'),y};
+  y+=f.r?HR:H;
+  if(f.n){const nt=document.createElement('div'); nt.className='nt kalam'; nt.textContent=f.n; $('rows').appendChild(nt); o.nt=nt}
+  const m=/^([^\d]*)([\d.]+)(,\d+)?(.*)$/.exec(f.v||'');
+  if(m&&!f.tx&&!f.fijo&&!/[×→]/.test(m[4]))o.cnt={pre:m[1],num:+m[2].replace(/\./g,''),dec:m[3]||'',post:m[4],
+    val:parseFloat(m[2].replace(/\./g,'')+(m[3]||'').replace(',','.'))};
+  // tv = la cifra sale más tarde que la fila (la voz dice antes la operación: «74,8 por 84… unos 6.300»)
+  if(f.tv==null)f.tv=f.t;
+  if(f.t>=0){SFX.push(f.r?[f.tv,'dinero/Digital counting.mp3',-24,.7]:[f.tv,'pop/'+['pop.mp3','Pop 1.wav','Pop (2).mp3'][i%3],-25,.5])}
+  if(f.r&&f.tv>=0)SFX.push([f.tv,'impacto/Hard Hit 4.mp3',-24,.8]);
+  if(f.tv>f.t+.2&&f.t>=0)SFX.push([f.t,'whoosh/whoosh.mp3',-30,.6]);
+  if(f.n&&f.tn>=0)SFX.push([f.tn,'rotulador/x',-25,.6]);
+  if(f.antes&&f.tx0>=0)SFX.push([f.tx0,'rotulador/x',-26,.4]);
+  return o});
+// ---- barra partida ----
+let P=null;
+if(D.parte){const p=D.parte, el=document.createElement('div'); el.id='parte'; el.style.top=(y+18)+'px';
+  el.innerHTML=`<div id="pbar"><div id="pseg"></div></div><div id="plabs"><span class="y">${p.izq}</span><span style="color:rgba(255,255,255,.75)">${p.der}</span></div>`;
+  $('rows').appendChild(el); P={p,el}; if(p.t>=0)SFX.push([p.t,'whoosh/whoosh.mp3',-24,.9])}
+// ---- pasos (chips) ----
+const chips=(D.chips||[]).map((nm,i)=>{const el=document.createElement('div'); el.innerHTML=`<em>${i+1}</em>${nm}`; $('chips').appendChild(el); return el});
+window.SFX=SFX;
+
+await fuentes(); if(conCoche){try{await $('car').decode()}catch(e){console.error('coche sin cargar: '+D.img)}}
+await Promise.all(bg.map(im=>im.decode().catch(()=>0)));
+{const t=$('tit'); if(t.scrollWidth>PW)t.style.transform=`scale(${PW/t.scrollWidth})`}
+filas.forEach(o=>{const v=o.el.querySelector('.val'), tx=o.el.querySelector('.txt');
+  let fs=parseFloat(getComputedStyle(o.nw).fontSize); while(v.offsetWidth>PW*.62&&fs>34){fs-=2; v.style.fontSize=fs+'px'}
+  if(o.nt){o.nt.style.left=(o.f.nl!=null?o.f.nl:80)+'px'; o.nt.style.top=(o.y+(o.f.r?HR:H)-34)+'px'}});
+// etiqueta o subtítulo más largos que su hueco -> dos líneas y, si no caben, letra menor (si no, se meten bajo la cifra)
+filas.forEach(o=>{const av=o.el.querySelector('.txt').clientWidth;
+  o.el.querySelectorAll('.lb,.sl').forEach(el=>{if(el.scrollWidth<=av+1)return;
+    el.style.whiteSpace='normal'; el.style.width=av+'px'; el.style.lineHeight='1.12';
+    let fs=parseFloat(getComputedStyle(el).fontSize); while(el.offsetHeight>2.3*fs*1.12&&fs>15){fs-=1; el.style.fontSize=fs+'px'}})});
+// sin coche: el panel, más grande y centrado en vertical (si no, la mitad de abajo queda vacía)
+if(!conCoche){const S=1.22, nota=filas.some(o=>o.nt)?44:0; $('rows').style.height=(y+(P?140:0)+nota)+'px';
+  const h=panel.offsetHeight; panel.style.transformOrigin='0 0'; panel.style.transform=`scale(${S})`;
+  panel.style.left=((1920-PW*S)/2)+'px'; panel.style.top=Math.max(64,(D.chips?930:1010)/2-h*S/2)+'px'}
+
+// ---- barras automáticas: las filas con cifra que comparten unidad (al menos dos) ----
+const grupos={}; filas.forEach(o=>{if(o.cnt&&o.cnt.val>0){const u=o.cnt.post.trim(); (grupos[u]=grupos[u]||[]).push(o)}});
+const BWX=PW*.46;
+Object.values(grupos).filter(g=>g.length>=2).forEach(g=>{const mx=Math.max(...g.map(o=>o.cnt.val));
+  g.forEach(o=>{const b=document.createElement('div'); b.className='bb'+(o.f.r?' res':'')+(o.f.c?' c-'+o.f.c:'');
+    const h=o.el.offsetHeight; b.style.left='80px'; b.style.width=BWX+'px'; b.style.top=(o.y+h+(o.f.r?14:2))+'px';
+    b.innerHTML='<i></i>'; $('rows').appendChild(b); o.bb={el:b.firstChild,w:BWX*o.cnt.val/mx};
+    if(o.nt)o.nt.style.top=(parseFloat(o.nt.style.top)+22)+'px'})});
+// ---- cabecera grande al principio (hasta que entra la primera cifra) ----
+const t1=Math.min(D.dur,...filas.filter(o=>o.f.t>=0).map(o=>o.f.t)), intro=!sigue&&!AB&&t1>1.8;
+// ficha de la fuente (Kiel, CSIS, DAT…): grande bajo el título mientras la voz la presenta
+let chip=null; if(D.chip&&intro){chip=document.createElement('div'); chip.textContent=D.chip.txt;
+  chip.style.cssText='position:absolute;left:0;top:'+($('tit').offsetTop+$('tit').offsetHeight+18)+'px;padding:12px 26px;border-radius:34px;'+
+    'background:rgba(255,212,0,.14);border:2px solid #ffd400;font:800 34px Mont;letter-spacing:.06em;white-space:nowrap;color:#fff';
+  panel.appendChild(chip); SFX.push([D.chip.t,'pop/Pop 1.wav',-24,.5])}
+const base={l:parseFloat(panel.style.left),t:parseFloat(panel.style.top)||96,s:conCoche?1:1.22};
+const tw=Math.min(PW,$('tit').scrollWidth), Si=conCoche?Math.min(1.14,(1880-base.l)/tw):Math.min(base.s*1.6,1700/tw);
+const ini=conCoche?{l:base.l,t:base.t,s:Si}:{l:(1920-tw*Si)/2,t:470-95*Si,s:Si};
+panel.style.transformOrigin='0 0';
+const resT=filas.filter(o=>o.f.r&&o.f.tv>=0).map(o=>o.f.tv);
+function fondo(t){if(!BGN)return; const per=Math.max(1,2*BGN-2), f=Math.floor((t-T0*0)*18)%per, im=bg[f<BGN?f:per-f];
+  if(!im||!im.naturalWidth)return; const z=1.08+.07*seg(t,0,D.dur), s=Math.max(1920/im.naturalWidth,1080/im.naturalHeight)*z;
+  const w=im.naturalWidth*s, h=im.naturalHeight*s; const nit=Math.max(AB?1-seg(t,AB-.2,AB+.5):0,RS?seg(t,RS,RS+.8):0);
+  cx.filter=`blur(${lerp(conCoche?10:8,0,nit)}px) brightness(${lerp(conCoche?.42:.5,.92,nit)}) saturate(.9)`;
+  cx.drawImage(im,(1920-w)/2+30*Math.sin(t*.25),(1080-h)/2,w,h); cx.filter='none'}
+
+function render(t){
+  fondo(t);
+  {const m=intro?E.io(seg(t,t1-.7,t1-.12)):1; panel.style.left=lerp(ini.l,base.l,m)+'px'; panel.style.top=lerp(ini.t,base.t,m)+'px';
+   panel.style.transform=`scale(${lerp(ini.s,base.s,m)})`}
+  {const vis=(AB?clamp(seg(t,AB-.1,AB+.35)*1.5):1)*(RS?1-seg(t,RS,RS+.5):1); panel.style.opacity=vis;
+   if(conCoche&&(AB||RS))$('carBox').style.opacity=$('carName').style.opacity=$('carSub').style.opacity=vis;
+   if(chip){const a=seg(t,D.chip.t,D.chip.t+.35); chip.style.opacity=clamp(a*3)*(1-seg(t,t1-.75,t1-.4));
+     chip.style.transform=`scale(${lerp(.6,1,E.back(a))})`; chip.style.transformOrigin='0 50%'}}
+  {let k=0; resT.forEach(tr=>{if(t>=tr)k=Math.max(k,1-seg(t,tr,tr+.45))});
+   $('cam').style.transform=`scale(${1+.035*seg(t,0,D.dur)+.03*E.out(k)})`}
+  if(conCoche){const w=$('carWrap'), u=E.out5(seg(t,T0,T0+.75));
+    w.style.transform=`translateX(${-520*(1-u)+24*seg(t,.7,D.dur)}px) scale(${1+.03*seg(t,0,D.dur)})`; w.style.opacity=seg(t,T0,T0+.12);
+    sube($('carName'),t,T0+.3,.4,16); sube($('carSub'),t,T0+.45,.4,12)}
+  sube($('kk'),t,TK+.12,.4,14);
+  const p=E.out5(seg(t,TT+.25,TT+.85)); $('tit').style.clipPath=`inset(-8% ${100*(1-p)}% -8% 0)`;
+  filas.forEach(o=>{const f=o.f, a=seg(t,f.t,f.t+.34);
+    o.el.style.opacity=clamp(a*3); o.el.style.transform=`translateX(${-36*(1-E.out5(a))}px)`;
+    const v=seg(t,f.tv+.04,f.tv+.4); o.nw.style.display='inline-block'; o.nw.style.transform=`scale(${lerp(f.r?.5:.7,1,E.back(v))})`;
+    o.nw.style.opacity=f.tv>f.t+.2?clamp(seg(t,f.tv,f.tv+.12)*1):1;
+    const cd=Math.max(.15,Math.min(f.r?.8:.55,D.dur-f.tv-.1));   // el contador acaba antes del corte
+    if(o.cnt){const k=E.out(seg(t,f.tv,f.tv+cd)); o.nw.textContent=o.cnt.pre+miles(o.cnt.num*k)+(k>=1?o.cnt.dec:'')+o.cnt.post}
+    if(o.bb)o.bb.el.style.width=(o.bb.w*E.out(seg(t,f.tv,f.tv+(f.r?.8:.6))))+'px';
+    if(o.bb)o.bb.el.parentNode.style.opacity=o.el.style.opacity;
+    if(o.sep){const s=E.io(seg(t,f.t-.3,f.t)); o.sep.style.transform=`scaleX(${s})`; o.sep.style.opacity=s>0?1:0}
+    if(o.old){const x=E.io(seg(t,f.tx0,f.tx0+.3)); o.old.style.setProperty('--tx',x); o.old.style.opacity=lerp(1,.55,x)}
+    if(o.nt){const q=seg(t,f.tn,f.tn+.6); o.nt.style.clipPath=`inset(-30% ${100*(1-q)}% -30% 0)`}});
+  if(P){const p=P.p, a=seg(t,p.t0,p.t0+.4), g=E.io(seg(t,p.t,p.t+.9));
+    P.el.style.opacity=clamp(a*3); $('pseg').style.width=(100*p.frac*g)+'%';
+    $('plabs').style.opacity=seg(t,p.t+.5,p.t+.9)}
+  chips.forEach((el,i)=>{const on=D.paso===i+1, ok=i+1<D.paso; el.className='chip'+(on?' on':ok?' ok':'');
+    const b=on?Math.sin(clamp((t-TK-.3)/.4)*Math.PI):0; el.style.transform=`scale(${1+.1*b})`;
+    el.style.opacity=sigue?1:seg(t,.3+i*.05,.6+i*.05)});
+  {let fl=sigue?0:.4*(1-seg(t,0,.14)); resT.forEach(tr=>{if(t>=tr&&t<tr+.25)fl=Math.max(fl,.2*(1-seg(t,tr,tr+.22)))}); $('flash').style.opacity=fl}
+}
+window.seek=async t=>{render(t);return 1};
+await window.seek(0); window.LISTO=true;
+})();
+</script></body></html>
